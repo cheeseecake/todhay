@@ -1,3 +1,9 @@
+# Chanel Backend for Web App
+
+Each folder here corresponds to one container - i.e. `backend` is your web app backend, and `nginx` is the HTTP server routing requests to each container.
+
+To add more containers, modify the `docker-compose.yml` file, then add the routing details into the `nginx/nginx.conf` file, and finally do `docker compose up -d` to start the new containers up.
+
 # Todo/Habit Incentive Webapp
 
 ## Getting Started

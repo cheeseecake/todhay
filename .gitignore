@@ -1,2 +1,6 @@
 db.sqlite3
 .env
+/nginx
+.pyc
+__pycache__
+

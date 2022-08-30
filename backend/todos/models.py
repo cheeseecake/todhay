@@ -17,19 +17,16 @@ FREQUENCIES = {
     'YEARLY': relativedelta(years=1)
 }
 
-
 class Tag(models.Model):
-    """Can be set on Lists, e.g. 'Habit', 'Learning', 'Social', 'Work', or any combination of them"""
+    """Can be set on Projects or Todos e.g. 'Learning', 'Social', 'Work', or any combination of them"""
     title = models.TextField()
     description = models.TextField(blank=True)
-    topic = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['topic', 'title']
-
+        ordering = ['title']
 
 class Metadata(models.Model):
-    """Common properties of List and Todo are grouped here"""
+    """Common properties are grouped here"""
 
     # UUIDs have almost no probability of colliding, and thus avoids
     # id collision issues when the backend/frontend go out of sync
@@ -39,15 +36,20 @@ class Metadata(models.Model):
     title = models.TextField()
     description = models.TextField(blank=True)
 
+    tags = models.ManyToManyField(Tag, blank=True)
+
+    start_date = models.DateField(blank=True, null=True)
+    due_date = models.DateField(blank=True, null=True)
+    completed_date = models.DateField(blank=True, null=True)
+
     class Meta:
         abstract = True  # Setting this will not create any table in the database
+        ordering = ['-completed_date', 'due_date', 'start_date']
 
-
-class List(Metadata):
+class Project(Metadata):
     """Lists can have any combination of recurring/non-recurring todos within them.
     When a list is saved, all children Todos are marked as completed"""
     # https://stackoverflow.com/questions/2529472/how-do-i-make-many-to-many-field-optional-in-django?rq=1
-    tags = models.ManyToManyField(Tag, blank=True)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -64,19 +66,7 @@ class List(Metadata):
 
 
 class Todo(Metadata):
-    list = models.ForeignKey(List, on_delete=models.CASCADE)
-    start_date = models.DateField(blank=True, null=True)
-    due_date = models.DateField(blank=True, null=True)
-    completed_date = models.DateField(blank=True, null=True)
-    effort = models.DecimalField(max_digits=6, decimal_places=2, default=0.5)
-    reward = models.DecimalField(max_digits=6, decimal_places=2, default=0.5)
-    # If frequency is not None, this means the todo is recurring
-    frequency = models.CharField(max_length=20,
-                                 choices=(
-                                     map(lambda x: (x, x), FREQUENCIES.keys())),
-                                 default=None,
-                                 null=True,
-                                 blank=True)
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, blank=True, null=True)
     # type = models.CharField(max_length=20,
     #                              choices=(
     #                                  ('todo', 'todo'),
@@ -85,11 +75,19 @@ class Todo(Metadata):
     #                              default='todo',
     #                              null=True,
     #                              blank=True)
+    # If frequency is not None, this means the todo is recurring
+    frequency = models.CharField(max_length=20,
+                                 choices=(
+                                     map(lambda x: (x, x), FREQUENCIES.keys())),
+                                 default=None,
+                                 null=True,
+                                 blank=True)
     # I'm guessing this is the date after which the task should stop recurring
     # If end_date is None and frequency is set, the task recurs forever
     end_date = models.DateField(blank=True, null=True)
-    current_streak = models.IntegerField(default=0, null=True)
-    max_streak = models.IntegerField(default=0, null=True)
+
+    effort = models.DecimalField(max_digits=6, decimal_places=2, default=0.5)
+    reward = models.DecimalField(max_digits=6, decimal_places=2, default=0.5)
 
     def clean(self):
         # Don't update todo if completed_date is before start_date
