@@ -1,6 +1,7 @@
 db.sqlite3
 .env
-/nginx
 .pyc
 __pycache__
+backend/nginx
+frontend/node_modules
 

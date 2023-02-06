@@ -1,0 +1,92 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  line-height: 1.5;
+  color: white;
+  text-align: left;
+  background-color: #023950;
+}
+
+.nav-tabs {
+  background-color: #212529;
+}
+
+.nav-tabs .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.nav-tabs .nav-link:hover {
+  color: white;
+  border-color: #e9ecef;
+}
+
+.nav-tabs .nav-link.active {
+  color: white;
+  background-color: #16191c;
+}
+
+.modal-content {
+  background-color: #212529;
+}
+
+.form-control {
+  color: white;
+  background-color: #16191c;
+}
+
+.form-select {
+  color: white;
+  background-color: #16191c;
+}
+
+.form-control:focus {
+  color: rgb(255, 255, 255);
+  background-color: #000000;
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.subtitle {
+  font-size: 80%;
+  color: #85aff8;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.active {
+  font-weight: bold;
+}
+
+.error {
+  font-size: 80%;
+  color: #d15c38;
+  font-style: italic;
+}
+
+.tooltip>.tooltip-inner {
+  max-width: 500px;
+  text-align: left;
+}
+
+.progress {
+  margin-top: 10px;
+  display: flex;
+  height: 1.5rem;
+  overflow: hidden;
+  line-height: 0;
+  font-size: 1rem;
+  background-color: #e9ecef;
+  border-radius: 0.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar {
+    transition: none;
+  }
+}

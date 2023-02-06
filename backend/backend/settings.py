@@ -136,8 +136,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
     "https://fisheecake.com",
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
+    "http://127.0.0.1:10000",
+    "http://localhost:10000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -156,8 +156,8 @@ SESSION_COOKIE_SAMESITE = None
 
 CSRF_TRUSTED_ORIGINS = [
     "https://fisheecake.com",
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
+    "http://127.0.0.1:10000",
+    "http://localhost:10000",
 ]
 # CSRF_COOKIE_DOMAIN=".localhost:3000"
 # CSRF_COOKIE_DOMAIN=".fisheecake.com"
