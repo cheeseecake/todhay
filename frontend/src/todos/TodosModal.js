@@ -136,9 +136,6 @@ export const TodosModal = ({
         refreshTodoTodos();
         refreshTodos();
         setTodo(null);
-        setTimeout(() => {
-          alert("Saved!");
-        }, 1000);
       })
       .catch(alert);
   };

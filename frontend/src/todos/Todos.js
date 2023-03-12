@@ -70,9 +70,6 @@ export const Todos = ({
           { ...todo, completed_date: format(new Date(), "yyyy-MM-dd") },
           DATA_TYPES.TODOS
         ).then(() => {
-          setTimeout(() => {
-            alert("Done!");
-          }, 1000);
           refreshTodos();
           refreshTodoTodos();
         })
@@ -414,7 +411,7 @@ export const Todos = ({
           </Nav.Link>
         </Nav.Item>
       </Nav>
-      <Table hover responsive="md" variant="dark">
+      <Table hover responsive="md" variant="dark" class="table">
         <thead>
           {activeTodoStatus == "KIV" ? (
             <tr>
