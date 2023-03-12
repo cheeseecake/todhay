@@ -28,30 +28,30 @@ def set_csrf_token(request):
     return JsonResponse({"details": "CSRF cookie set"})
 
 
-@require_POST
-def LoginView(request):
-    data = json.loads(request.body)
-    username = data.get('username')
-    password = data.get('password')
-    if username is None or password is None:
-        return JsonResponse({
-            "errors": {
-                "__all__": "Please enter both username and password"
-            }
-        }, status=400)
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return JsonResponse({"username": username})
-    return JsonResponse(
-        {"error": "Invalid credentials"},
-        status=400,
-    )
+# @require_POST
+# def LoginView(request):
+#     data = json.loads(request.body)
+#     username = data.get('username')
+#     password = data.get('password')
+#     if username is None or password is None:
+#         return JsonResponse({
+#             "errors": {
+#                 "__all__": "Please enter both username and password"
+#             }
+#         }, status=400)
+#     user = authenticate(username=username, password=password)
+#     if user is not None:
+#         login(request, user)
+#         return JsonResponse({"username": username})
+#     return JsonResponse(
+#         {"error": "Invalid credentials"},
+#         status=400,
+#     )
 
 
-def LogoutView(request):
-    logout(request)
-    return JsonResponse({"detail": "Logged out"})
+# def LogoutView(request):
+#     logout(request)
+#     return JsonResponse({"detail": "Logged out"})
 
 
 class TagViewSet(viewsets.ModelViewSet):
