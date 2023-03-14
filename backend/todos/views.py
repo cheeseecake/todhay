@@ -76,6 +76,7 @@ class TodoViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_update(self, serializer):
+        today = date.today()
         # Issue: Function is not called when you create and complete a todo in one request.
         # Get the todo that is going to be updated
         original_todo = self.get_object()
@@ -109,9 +110,13 @@ class TodoViewSet(viewsets.ModelViewSet):
         # Calculate the new due_date and start_date
         # better to have it based on original start date and due date over completed date
         relativedelta_to_add = FREQUENCIES[updated_todo.frequency]
-        new_start_date = updated_todo.start_date + relativedelta_to_add
-        new_due_date = updated_todo.due_date + \
-            relativedelta_to_add if updated_todo.due_date else None
+        if updated_todo.frequency == "DAILY" :
+            new_start_date = today + relativedelta_to_add if updated_completed_date== today else today
+            new_due_date = new_start_date
+        else:
+            new_start_date = updated_todo.start_date + relativedelta_to_add
+            new_due_date = updated_todo.due_date + \
+                relativedelta_to_add if updated_todo.due_date else None
 
         # If end_date is set, and new_due_date is past the todo's end_date, don't create the recurring todo
         if updated_todo.end_date and new_due_date >= updated_todo.end_date:

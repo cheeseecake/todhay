@@ -65,7 +65,7 @@ export const Todos = ({
   useEffect(() => refreshTodos(), []);
 
   const completeTodo = (todo) =>
-    new Date().getDate() >= new Date(todo.start_date).getDate()
+    new Date().getTime() >= new Date(todo.start_date).getTime()
       ? patchType(
           { ...todo, completed_date: format(new Date(), "yyyy-MM-dd") },
           DATA_TYPES.TODOS
@@ -411,7 +411,7 @@ export const Todos = ({
           </Nav.Link>
         </Nav.Item>
       </Nav>
-      <Table hover responsive="md" variant="dark" class="table">
+      <Table hover responsive="md" variant="dark" className="table">
         <thead>
           {activeTodoStatus == "KIV" ? (
             <tr>
