@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.12
 
 # Don't buffer terminal output
 ENV PYTHONUNBUFFERED 1

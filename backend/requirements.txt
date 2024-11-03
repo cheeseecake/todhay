@@ -1,6 +1,6 @@
-autopep8
-django-cors-headers
-django>=4.0.7
-djangorestframework==3.13.1
-python-dateutil
-python-dotenv
+autopep8==2.3.0
+Django==5.0.6
+django-cors-headers==4.4.0
+djangorestframework==3.15.2
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1

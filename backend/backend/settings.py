@@ -135,7 +135,8 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    "https://fisheecake.com",
+    "http://chanel-server:10000",
+    "https://todhay.chanelng.com",
     "http://127.0.0.1:10000",
     "http://localhost:10000",
 ]
@@ -155,6 +156,7 @@ CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_SAMESITE = None
 
 CSRF_TRUSTED_ORIGINS = [
+    "http://chanel-server:10000",
     "https://fisheecake.com",
     "http://127.0.0.1:10000",
     "http://localhost:10000",

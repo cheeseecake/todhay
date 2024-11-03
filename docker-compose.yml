@@ -3,6 +3,7 @@ services:
     build: ./backend
     volumes:
       - ./backend:/backend
+    restart: always
   frontend:
     build: ./frontend
     ports:
@@ -11,5 +12,8 @@ services:
       - ./frontend:/frontend
       - /frontend/node_modules
     environment:
+      - TZ=Asia/Singapore
       - CHOKIDAR_USEPOLLING=true # bind mount on windows does not trigger file notification events, so we have to manually poll
       - CHOKIDAR_INTERVAL=1000 # polling interval set to 1000ms to reduce CPU load
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
+    restart: always

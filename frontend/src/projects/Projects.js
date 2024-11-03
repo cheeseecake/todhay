@@ -64,7 +64,7 @@ export const Projects = ({
 
   // Sort list by due date
   filteredProjects = filteredProjects.sort(
-    (a, b) => new Date(a.due_date) - new Date(b.due_date)
+    (a, b) => new Date(a.completed_date) - new Date(b.completed_date)
   );
 
   const cards = filteredProjects.map((project) => {
