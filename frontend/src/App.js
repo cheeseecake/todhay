@@ -11,7 +11,7 @@ import { Wishlist } from "./wishlist/Wishlist";
 
 export const API_ROOT = "";
 
-/* Enum of data types and their display values 
+/* Enum of data types and their display values
 This allows us to reference them as DATA_TYPES.[type],
 which prevents errors from typos happening further down.*/
 export const DATA_TYPES = {
@@ -173,6 +173,7 @@ export const App = () => {
       )}
       <Navbar bg="dark" variant="dark">
         <Container>
+          <Navbar.Brand>Todhay</Navbar.Brand>
           <Nav variant="tabs" className="me-auto">
             <Nav.Link
               key="Todos"

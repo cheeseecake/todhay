@@ -65,7 +65,7 @@ export const Todos = ({
   useEffect(() => refreshTodos(), []);
 
   const completeTodo = (todo) =>
-    new Date().getTime() >= new Date(todo.start_date).getTime()
+    new Date() >= new Date(todo.start_date).setHours(0, 0, 0, 0)
       ? patchType(
           { ...todo, completed_date: format(new Date(), "yyyy-MM-dd") },
           DATA_TYPES.TODOS
@@ -73,9 +73,11 @@ export const Todos = ({
           refreshTodos();
           refreshTodoTodos();
         })
-      : window.alert(
-          `Completed date cannot be before start date. Please edit start/completed date.`
-        );
+      : console.log(new Date(todo.start_date));
+
+  // : window.alert(
+  //     `Completed date cannot be before start date. Please edit start/completed date.`
+  //   );
 
   const startTodo = (todo) =>
     patchType(
@@ -246,7 +248,7 @@ export const Todos = ({
             </b>
             {!todo.completed_date ? (
               ""
-            ) :  (
+            ) : (
               <b style={{ fontSize: "80%" }}>
                 {format(parseISO(todo.completed_date), "d MMM")}
               </b>
