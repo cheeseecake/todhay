@@ -157,7 +157,7 @@ SESSION_COOKIE_SAMESITE = None
 
 CSRF_TRUSTED_ORIGINS = [
     "http://chanel-server:10000",
-    "https://fisheecake.com",
+    "https://todhay.chanelng.com",
     "http://127.0.0.1:10000",
     "http://localhost:10000",
 ]
