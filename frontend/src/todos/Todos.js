@@ -145,7 +145,7 @@ export const Todos = ({
   );
 
   let planningTodos = filteredTodos.filter(
-    (todo) => !todo.completed_date && !todo.start_date && !todo.due_date
+    (todo) => !todo.completed_date && !todo.start_date
   );
 
   const earnedRewards = filteredDoneTodos.reduce(
