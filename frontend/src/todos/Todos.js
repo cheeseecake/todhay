@@ -11,6 +11,7 @@ import {
   Col,
   Pagination,
 } from "react-bootstrap";
+import { FcInspection } from "react-icons/fc";
 import { patchType } from "../api/api";
 import { DATA_TYPES } from "../App";
 import { formatDays } from "../shared/util";
@@ -132,12 +133,12 @@ export const Todos = ({
           todo.due_date &&
           parseISO(todo.due_date) <= new Date()))
   );
+
   let startingTodos = filteredTodos.filter(
     (todo) =>
       // not completed AND
       !todo.completed_date &&
       // not started AND
-      todo.due_date &&
       (!todo.start_date || parseISO(todo.start_date)) > new Date() &&
       // not due
       todo.start_date &&
@@ -191,7 +192,6 @@ export const Todos = ({
             format(parseISO(todo.start_date), "d MMM"),
             ")"
           );
-
       const isOverdue = new Date() > parseISO(todo.due_date);
 
       return (
@@ -217,21 +217,21 @@ export const Todos = ({
               </Badge>
             )}
           </td>
-          {!todo.completed_date && (
-            <td>
-              <b style={{ fontSize: "80%" }}>
-                ${parseFloat(todo.reward).toFixed(1)}
-              </b>
-              {parseFloat(todo.effort) < 1 ? (
-                <Badge bg="dark"> for {todo.effort * 60} min</Badge>
-              ) : (
-                <Badge bg="dark">
-                  {" "}
-                  for {parseFloat(todo.effort).toFixed(1)} hrs
-                </Badge>
-              )}
-            </td>
-          )}
+
+          <td>
+            <b style={{ fontSize: "80%" }}>
+              ${parseFloat(todo.reward).toFixed(1)}
+            </b>
+            {parseFloat(todo.effort) < 1 ? (
+              <Badge bg="dark"> for {todo.effort * 60} min</Badge>
+            ) : (
+              <Badge bg="dark">
+                {" "}
+                for {parseFloat(todo.effort).toFixed(1)} hrs
+              </Badge>
+            )}
+          </td>
+
           <td
             style={{
               textAlign: "right",
@@ -250,7 +250,8 @@ export const Todos = ({
               ""
             ) : (
               <b style={{ fontSize: "80%" }}>
-                {format(parseISO(todo.completed_date), "d MMM")}
+                {" "}
+                ({format(parseISO(todo.completed_date), "d MMM")})
               </b>
             )}
           </td>
@@ -260,7 +261,7 @@ export const Todos = ({
             }}
           >
             {todo.completed_date ? (
-              <span>Earned ${todo.reward}</span>
+            <FcInspection/>
             ) : todo.start_date && parseISO(todo.start_date) < new Date() ? (
               <Button
                 className="py-0"
@@ -438,7 +439,8 @@ export const Todos = ({
             </tr>
           ) : (
             <tr>
-              <th>Todo</th>
+                                      <th>Todo</th>
+                                      <th>Effort</th>
               <th style={{ textAlign: "right" }}>Done</th>
               <th></th>
             </tr>
