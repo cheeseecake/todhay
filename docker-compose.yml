@@ -3,6 +3,7 @@ services:
     build: ./backend
     volumes:
       - ./backend:/backend
+      - ./backend/db.sqlite3:/backend/db.sqlite3
     restart: always
   frontend:
     build: ./frontend
