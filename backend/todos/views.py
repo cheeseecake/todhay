@@ -68,11 +68,30 @@ class TodoViewSet(viewsets.ModelViewSet):
     serializer_class = TodoSerializer
 
     def get_queryset(self):
-
         queryset = Todo.objects.all()
         wip = self.request.query_params.get('wip')
         if wip:
-            queryset = queryset.filter(completed_date__isnull=True)
+
+            # Update overdue todos
+            today = date.today()
+            overdue_todos = queryset.filter(due_date__lt=today, completed_date__isnull=True)
+
+            for todo in overdue_todos:
+                if todo.due_date:
+                    # Calculate days difference between due_date and today
+                    days_diff = (today - todo.due_date).days
+
+                    # Update start_date if it is the same as due_date
+                    if todo.start_date and todo.start_date == todo.due_date:
+                        todo.start_date = todo.start_date + relativedelta(days=days_diff)
+
+                    # Update due_date
+                    todo.due_date = todo.due_date + relativedelta(days=days_diff)
+                    todo.save()
+
+            # Return the updated queryset
+            queryset = Todo.objects.filter(completed_date__isnull=True)
+
         return queryset
 
     def perform_update(self, serializer):
