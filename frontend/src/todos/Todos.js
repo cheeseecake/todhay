@@ -377,7 +377,7 @@ export const Todos = ({
               setPage(1);
             }}
           >
-            KIV ({planningTodos.length})
+            Quest Board ({planningTodos.length})
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -388,7 +388,7 @@ export const Todos = ({
               setPage(1);
             }}
           >
-            Starting ({startingTodos.length})
+            Accepted ({startingTodos.length})
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -399,7 +399,7 @@ export const Todos = ({
               setPage(1);
             }}
           >
-            WIP ({doingTodos.length})
+            In Progress ({doingTodos.length})
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -410,7 +410,7 @@ export const Todos = ({
               setPage(1);
             }}
           >
-            Done ({filteredDoneTodos.length})
+            Completed ({filteredDoneTodos.length})
           </Nav.Link>
         </Nav.Item>
       </Nav>
