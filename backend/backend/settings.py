@@ -31,7 +31,7 @@ SECRET_KEY = dotenv_values(env_file_path)["SECRET_KEY"]
 DEBUG = True
 
 # Allow requests coming from 'backend', which is the hostname of the docker container running this server
-ALLOWED_HOSTS = ["backend", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["backend", "localhost", "127.0.0.1",'chanel-server']
 
 
 # Application definition
