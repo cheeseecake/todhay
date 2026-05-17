@@ -1,20 +1,25 @@
+version: "3.9"
+
 services:
   backend:
     build: ./backend
+    user: 1000:1000
     volumes:
-      - ./backend:/backend
-      - ./backend/db.sqlite3:/backend/db.sqlite3
-    restart: always
-  frontend:
-    build: ./frontend
-    ports:
-      - "10000:3000"
-    volumes:
-      - ./frontend:/frontend
-      - /frontend/node_modules
+      - ./backend/db.sqlite3:/backend/db.sqlite3 # persist SQLite DB
     environment:
       - TZ=Asia/Singapore
-      - CHOKIDAR_USEPOLLING=true # bind mount on windows does not trigger file notification events, so we have to manually poll
-      - CHOKIDAR_INTERVAL=1000 # polling interval set to 1000ms to reduce CPU load
+    ports:
+      - "8000:8000" # expose backend port
+    restart: always
+
+  frontend:
+    build: ./frontend
+    user: 1000:1000
+    ports:
+      - "10000:3000"
+    environment:
+      - TZ=Asia/Singapore
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
       - DANGEROUSLY_DISABLE_HOST_CHECK=true
     restart: always

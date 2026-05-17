@@ -9,7 +9,7 @@ import { Tags } from "./tags/Tags";
 import { Todos } from "./todos/Todos";
 import { Wishlist } from "./wishlist/Wishlist";
 
-export const API_ROOT = "";
+export const API_ROOT = "http://localhost:8000";
 
 /* Enum of data types and their display values
 This allows us to reference them as DATA_TYPES.[type],

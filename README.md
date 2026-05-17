@@ -41,6 +41,22 @@ Enter the development shell:
 devenv shell
 ```
 
+Start the backend:
+
+```sh
+cd backend
+uv run manage.py runserver
+```
+
+Start the frontend:
+
+```sh
+cd frontend
+pnpm start
+```
+
+You can view the frontend at `http://localhost:3000` and the backend at `http://localhost:8000`.
+
 ### Editor Integration
 
 The default Python interpreter needs to be selected in VSCode initially.
