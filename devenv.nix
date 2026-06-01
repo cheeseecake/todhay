@@ -16,7 +16,7 @@
   # https://devenv.sh/languages/
   languages.python = {
     enable = true;
-    version = "3.12";
+    package = pkgs.python312;
     uv.enable = true;
   };
   languages.javascript.enable = true;

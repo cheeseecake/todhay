@@ -16,7 +16,7 @@ WORKDIR /frontend
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Install dependencies for build
-RUN pnpm install --frozen-lockfile
+RUN pnpm ci
 
 # Copy the rest of the source code
 COPY public/ ./public
