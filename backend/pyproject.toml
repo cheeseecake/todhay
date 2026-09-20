@@ -9,6 +9,8 @@ dependencies = [
     "django==6.0.5",
     "django-cors-headers==4.9.0",
     "djangorestframework==3.17.1",
+    "gunicorn>=26.2.0",
     "python-dateutil==2.9.0.post0",
     "python-dotenv==1.2.2",
+    "whitenoise>=6.12.0",
 ]

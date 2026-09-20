@@ -1,9 +1,13 @@
 db.sqlite3
 .env
+backend.env
 .pyc
 __pycache__
 backend/nginx
 frontend/node_modules
+frontend/build/
+data/
+backend/staticfiles/
 
 
 # Devenv

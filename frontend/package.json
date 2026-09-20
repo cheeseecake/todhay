@@ -2,6 +2,8 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://todhay.chanelng.com",
+  "packageManager": "pnpm@11.1.2",
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
     "axios": "^1.16.1",

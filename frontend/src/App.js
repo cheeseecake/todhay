@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Container, Nav, Navbar, Button } from "react-bootstrap";
 
-import { getType, getCSRF, getLogout } from "./api/api";
+import { getType, getCSRF, getLogout, getSession, setUnauthorizedHandler } from "./api/api";
 
 import { LoginModal } from "./login/LoginModal";
 import { Projects } from "./projects/Projects";
@@ -9,7 +9,8 @@ import { Tags } from "./tags/Tags";
 import { Todos } from "./todos/Todos";
 import { Wishlist } from "./wishlist/Wishlist";
 
-export const API_ROOT = "http://chanel-server:8000";
+export const API_ROOT =
+    process.env.REACT_APP_API_ROOT || "http://localhost:8000";
 
 /* Enum of data types and their display values
 This allows us to reference them as DATA_TYPES.[type],
@@ -52,6 +53,7 @@ export const App = () => {
     const [selectedTags, setSelectedTags] = useState([]);
 
     const [loggingIn, setLoggingIn] = useState();
+    const [username, setUsername] = useState(null);
 
     const refreshTags = useCallback(
         () => void getType(DATA_TYPES.TAGS).then((json) => setTags(json)),
@@ -78,21 +80,40 @@ export const App = () => {
     );
 
     const onLogout = () =>
-        getLogout().then(() => {
+        getLogout().finally(() => {
+            setUsername(null);
             setTags([]);
             setProjects([]);
             setTodos([]);
+            setTodoTodos([]);
             setWishlist([]);
         });
 
     useEffect(() => {
+        setUnauthorizedHandler(() => setUsername(null));
         getCSRF();
+        getSession()
+            .then((session) => setUsername(session.username))
+            .catch(() => setUsername(null));
+    }, []);
+
+    useEffect(() => {
+        if (!username) {
+            return;
+        }
         refreshTags();
         refreshProjects();
         refreshTodos();
         refreshTodoTodos();
         refreshWishlist();
-    }, []);
+    }, [
+        username,
+        refreshTags,
+        refreshProjects,
+        refreshTodos,
+        refreshTodoTodos,
+        refreshWishlist,
+    ]);
 
     const viewTodosFromProjectId = (projectId) => {
         setSelectedProjectId(projectId);
@@ -164,11 +185,8 @@ export const App = () => {
         <div>
             {loggingIn && (
                 <LoginModal
-                    refreshWishlist={refreshWishlist}
-                    refreshProjects={refreshProjects}
-                    refreshTodos={refreshTodos}
-                    refreshTags={refreshTags}
                     setLoggingIn={setLoggingIn}
+                    setUsername={setUsername}
                 />
             )}
             <Navbar bg="dark" variant="dark">
@@ -208,7 +226,7 @@ export const App = () => {
                         style={{ color: "white" }}
                         className="justify-content-end"
                     >
-                        {todos.length > 0 ? (
+                        {username ? (
                             <Button variant="outline-light" onClick={onLogout}>
                                 Logout
                             </Button>

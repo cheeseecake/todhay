@@ -1,17 +1,20 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from rest_framework import viewsets
-from rest_framework import generics
+from rest_framework.decorators import (api_view, permission_classes,
+                                       throttle_classes)
+from rest_framework.permissions import AllowAny
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 from todos.models import FREQUENCIES, Project, Tag, Todo, Wishlist
 from todos.serializers import (ProjectSerializer, TagSerializer, TodoSerializer,
                                WishlistSerializer)
 
-import json
 from django.contrib.auth import authenticate, login, logout
-from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
-from rest_framework.pagination import PageNumberPagination
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -20,38 +23,59 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 20
 
 
+class LoginRateThrottle(AnonRateThrottle):
+    scope = "login"
+
+
 @ensure_csrf_cookie
 def set_csrf_token(request):
     """
-    This will be `/api/set-csrf-cookie` on `urls.py`
+    Returns the CSRF token to the frontend. The frontend sends it back in the
+    `X-Csrftoken` header for unsafe requests.
     """
-    return JsonResponse({"details": "CSRF cookie set"})
+    return JsonResponse({"details": "CSRF cookie set", "csrfToken": get_token(request)})
 
 
-# @require_POST
-# def LoginView(request):
-#     data = json.loads(request.body)
-#     username = data.get('username')
-#     password = data.get('password')
-#     if username is None or password is None:
-#         return JsonResponse({
-#             "errors": {
-#                 "__all__": "Please enter both username and password"
-#             }
-#         }, status=400)
-#     user = authenticate(username=username, password=password)
-#     if user is not None:
-#         login(request, user)
-#         return JsonResponse({"username": username})
-#     return JsonResponse(
-#         {"error": "Invalid credentials"},
-#         status=400,
-#     )
+@api_view(["POST"])
+@permission_classes([AllowAny])
+@throttle_classes([LoginRateThrottle])
+def LoginView(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    if username is None or password is None:
+        return Response({
+            "errors": {
+                "__all__": "Please enter both username and password"
+            }
+        }, status=400)
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        # Django rotates the CSRF token on login, so hand the new one back
+        return Response({
+            "username": user.username,
+            "csrfToken": get_token(request),
+        })
+    return Response(
+        {"error": "Invalid credentials"},
+        status=400,
+    )
 
 
-# def LogoutView(request):
-#     logout(request)
-#     return JsonResponse({"detail": "Logged out"})
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def LogoutView(request):
+    logout(request)
+    return Response({"detail": "Logged out"})
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def SessionView(request):
+    """Lets the frontend know whether it has a valid session on page load."""
+    if not request.user.is_authenticated:
+        return Response({"detail": "Not authenticated"}, status=401)
+    return Response({"username": request.user.username})
 
 
 class TagViewSet(viewsets.ModelViewSet):

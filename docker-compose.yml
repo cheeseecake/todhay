@@ -2,6 +2,7 @@ services:
   backend:
     build: ./backend
     user: 1000:1000
+    command: ["uv", "run", "manage.py", "runserver", "0.0.0.0:8000"]
     volumes:
       - ./backend/db.sqlite3:/backend/db.sqlite3 # persist SQLite DB
     environment:

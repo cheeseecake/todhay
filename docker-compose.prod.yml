@@ -1,0 +1,28 @@
+services:
+  backend:
+    image: ghcr.io/cheeseecake/todhay-backend:latest
+    container_name: todhay-backend
+    restart: always
+    env_file:
+      - backend.env
+    environment:
+      - DB_PATH=/data/db.sqlite3
+      - TZ=Asia/Singapore
+    volumes:
+      - ./data:/data
+    expose:
+      - "8000"
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik
+      - traefik.http.routers.todhay-api.rule=Host(`api.todhay.chanelng.com`)
+      - traefik.http.routers.todhay-api.entrypoints=websecure
+      - traefik.http.routers.todhay-api.tls=true
+      - traefik.http.routers.todhay-api.tls.certresolver=letsencrypt
+      - traefik.http.services.todhay-api.loadbalancer.server.port=8000
+
+networks:
+  traefik:
+    external: true

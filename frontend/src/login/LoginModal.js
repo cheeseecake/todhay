@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Form, Row, Col, Modal } from "react-bootstrap";
-import { getLogin } from "../api/api";
+import { getCSRF, getLogin } from "../api/api";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -13,12 +13,11 @@ const listSchema = yup
     .required();
 
 export const LoginModal = ({
-    refreshTags,
-    refreshProjects,
-    refreshTodos,
-    refreshWishlist,
-    setLoggingIn
+    setLoggingIn,
+    setUsername
 }) => {
+
+    const [error, setError] = useState(null);
 
     const {
         register,
@@ -29,19 +28,18 @@ export const LoginModal = ({
     });
 
     const onSubmit = (credentials) =>
-
-        getLogin(credentials)
-            .then(() => {
-                refreshTags();
-                refreshProjects();
-                refreshTodos();
-                refreshWishlist();
+        // Refresh the CSRF token in case it expired while the modal was open
+        getCSRF()
+            .then(() => getLogin(credentials))
+            .then((session) => {
+                setUsername(session.username);
                 reset({
                     username: '',
                     password: '',
                 })
                 setLoggingIn(null);
             })
+            .catch((err) => setError(err.message));
 
     return (
         <>
@@ -77,6 +75,11 @@ export const LoginModal = ({
                                 </Form.Group>
                             </Col>
                         </Row>
+                        {error && (
+                            <Row>
+                                <Col className="text-danger mt-2">{error}</Col>
+                            </Row>
+                        )}
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>

@@ -7,6 +7,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 from dotenv import dotenv_values
 from django.core.management.utils import get_random_secret_key
@@ -14,24 +15,36 @@ from django.core.management.utils import get_random_secret_key
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+def env_bool(key, default=False):
+    return os.environ.get(key, str(default)).lower() in ("1", "true", "yes", "on")
 
-# Try to read from .env file, otherwise generate one
-env_file_path = BASE_DIR / "backend" / ".env"
-if not env_file_path.exists():
-    with env_file_path.open("w") as f:
-        f.write(f"SECRET_KEY={get_random_secret_key()}")
 
-SECRET_KEY = dotenv_values(env_file_path)["SECRET_KEY"]
+def env_list(key, default=""):
+    return [item.strip() for item in os.environ.get(key, default).split(",") if item.strip()]
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Set DEBUG=false in the environment when deploying publicly.
+DEBUG = env_bool("DEBUG", True)
 
-# Allow requests coming from 'backend', which is the hostname of the docker container running this server
-ALLOWED_HOSTS = ["backend", "localhost", "127.0.0.1",'chanel-server']
+# SECURITY WARNING: keep the secret key used in production secret!
+# In production, provide SECRET_KEY via the environment.
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+# Fall back to a locally generated key so development setups work out of the box
+if not SECRET_KEY:
+    env_file_path = BASE_DIR / "backend" / ".env"
+    if not env_file_path.exists():
+        with env_file_path.open("w") as f:
+            f.write(f"SECRET_KEY={get_random_secret_key()}")
+    SECRET_KEY = dotenv_values(env_file_path)["SECRET_KEY"]
+
+# Hosts that serve this Django project
+ALLOWED_HOSTS = env_list(
+    "ALLOWED_HOSTS",
+    "api.todhay.chanelng.com,backend,localhost,127.0.0.1,chanel-server",
+)
 
 
 # Application definition
@@ -51,9 +64,10 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -85,7 +99,7 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": os.environ.get("DB_PATH", BASE_DIR / "db.sqlite3"),
     }
 }
 
@@ -128,40 +142,63 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOWED_ORIGINS = [
-    "http://chanel-server:10000",
-    "https://todhay.chanelng.com",
-    "http://127.0.0.1:10000",
-    "http://localhost:3000",
-    "http://localhost:10000",
-]
+# REST framework: only authenticated users may access the API.
+# The frontend authenticates with a session cookie, which DRF's
+# SessionAuthentication also CSRF-protects.
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "todos.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "login": "5/min",
+    },
+}
+
+CORS_ALLOWED_ORIGINS = env_list(
+    "CORS_ALLOWED_ORIGINS",
+    "https://todhay.chanelng.com,http://localhost:3000,http://127.0.0.1:3000,http://localhost:10000,http://127.0.0.1:10000",
+)
 
 CORS_ALLOW_CREDENTIALS = True
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.SessionAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ],
-# }
-# SESSION_COOKIE_DOMAIN=".localhost:300"
-# SESSION_COOKIE_DOMAIN=".fisheecake.com"
-SESSION_COOKIE_SAMESITE = None
+# Origins allowed to make unsafe (POST/PUT/PATCH/DELETE) requests.
+# The frontend is served from a different origin, so it must be listed here.
+CSRF_TRUSTED_ORIGINS = env_list(
+    "CSRF_TRUSTED_ORIGINS",
+    "https://todhay.chanelng.com,https://api.todhay.chanelng.com,http://localhost:3000,http://127.0.0.1:3000,http://localhost:10000,http://127.0.0.1:10000",
+)
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://chanel-server:10000",
-    "https://todhay.chanelng.com",
-    "http://127.0.0.1:10000",
-    "http://localhost:10000",
-]
-# CSRF_COOKIE_DOMAIN=".localhost:3000"
-# CSRF_COOKIE_DOMAIN=".fisheecake.com"
-CSRF_COOKIE_SAMESITE = None
+# Session and CSRF cookies are only sent over HTTPS in production.
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_HTTPONLY = True
+
+# The CSRF token is handed to the frontend in the /set-csrf response body,
+# so the cookie itself can stay hidden from JavaScript.
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_HTTPONLY = True
+
+# Traefik terminates TLS and forwards the original protocol/host.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", not DEBUG)

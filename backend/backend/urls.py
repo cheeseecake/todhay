@@ -30,7 +30,8 @@ router.register('wishlist', views.WishlistViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('set-csrf', views.set_csrf_token, name='Set-CSRF'),
-    # path('login', views.LoginView, name='Login'),
-    # path('logout', views.LogoutView, name='Logout'),
+    path('login', views.LoginView, name='Login'),
+    path('logout', views.LogoutView, name='Logout'),
+    path('session', views.SessionView, name='Session'),
     *router.urls
 ]
